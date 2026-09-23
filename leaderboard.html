@@ -334,6 +334,7 @@ function renderMonthlySummary() {
                     earn: 0, 
                     first: 0, 
                     second: 0,
+                    third: 0,
                     play: 0 
                 };
             }
@@ -346,6 +347,7 @@ function renderMonthlySummary() {
             player.earn += p.earn || 0;
             if (p.rank == 1) player.first++;
             if (p.rank == 2) player.second++;
+            if (p.rank == 3) player.third++;
         });
     });
 
@@ -399,6 +401,7 @@ function renderMonthlySummary() {
             <th>ได้</th>
             <th>🥇</th>
             <th>🥈</th>
+            <th>🥉</th>
             <th>W/L Streak</th>
             <th>สุทธิ</th>
             <th>รายละเอียด</th>
@@ -420,6 +423,7 @@ function renderMonthlySummary() {
                 <td>${p.earn}</td>
                 <td>${p.first}</td>
                 <td>${p.second}</td>
+                <td>${p.third}</td>
                 <td>${streakIcon}</td>
                 <td class="${p.profit >= 0 ? 'profit-plus' : 'profit-minus'}">
                     ${p.profit >= 0 ? '+' : ''}${p.profit}

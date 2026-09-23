@@ -137,12 +137,62 @@ button {
 // 🔥 เก็บ cache
 let playerCache = {};
 
+// 🏆 สถานะโหมดที่ 1-3
+let top3Mode = false;
+let top3Player = 0;
+
 function setBlind(p, v) {
     document.getElementById("blind"+p).value = v;
 
     let btns = document.querySelectorAll(`#p${p} .blind-btn`);
     btns.forEach(b=>b.classList.remove("active"));
     btns[v].classList.add("active");
+}
+
+function toggleTop3() {
+    top3Mode = !top3Mode;
+
+    const btn = document.getElementById("top3Btn");
+    const selector = document.getElementById("top3Selector");
+
+    if (top3Mode) {
+        btn.innerHTML = "🏆 ที่ 1-3: ON";
+        btn.style.background = "#00c853";
+        btn.style.color = "#000";
+        selector.style.display = "block";
+        renderTop3Selector();
+    } else {
+        btn.innerHTML = "🏆 ที่ 1-3: OFF";
+        btn.style.background = "#333";
+        btn.style.color = "#fff";
+        selector.style.display = "none";
+        top3Player = 0;
+    }
+}
+
+function renderTop3Selector() {
+    let n = +document.getElementById("players").value;
+    let box = document.getElementById("top3Players");
+    if (!box) return;
+
+    box.innerHTML = "";
+
+    for (let i = 1; i <= n; i++) {
+        let name = document.getElementById("name"+i)?.value || ("P"+i);
+
+        box.innerHTML += `
+        <label style="margin:0 8px; display:inline-block;">
+            <input type="radio" name="top3select" value="${i}"
+                ${top3Player == i ? "checked" : ""}
+                onchange="setTop3Player(${i})">
+            ${name}
+        </label>
+        `;
+    }
+}
+
+function setTop3Player(i) {
+    top3Player = i;
 }
 
 function generatePlayers() {
@@ -174,7 +224,7 @@ function generatePlayers() {
         <div class="player" id="p${i}">
             <b>P${i}</b><br>
 
-            👤 <input type="text" id="name${i}" value="${data.name || ""}" placeholder="ชื่อผู้เล่น"><br>
+            👤 <input type="text" id="name${i}" value="${data.name || ""}" placeholder="ชื่อผู้เล่น" oninput="if(top3Mode) renderTop3Selector();"><br>
 
             🔫 <input type="number" id="kill${i}" value="${data.kill || 0}"><br>
 

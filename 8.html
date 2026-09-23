@@ -85,7 +85,7 @@ button {
 <body>
 
 <div class="box">
-    <h2>🎲 คำนวนเงิน 270 | ที่ 1-3 |</h2>
+    <h2>🎲 คำนวนเงิน 270 | ที่ 1-2 / ที่ 1-3 |</h2>
 
     จำนวนผู้เล่น:
     <input type="number" id="players" value="7" onchange="generatePlayers()">
@@ -94,6 +94,7 @@ button {
 
     <button onclick="calculate()">คำนวณ</button>
     <button onclick="toggleDeal()" id="dealBtn">Deal: OFF</button>
+    <button onclick="toggleTop3()" id="top3Btn">🏆 ที่ 1-3: OFF</button>
     <button onclick="saveData()">💾 Save</button>
 
     <div class="result" id="output"></div>
@@ -282,8 +283,21 @@ function calculate() {
 
     let first;
     let second;
+    let third = 0;
 
-    if (dealMode) {
+    if (top3Mode) {
+        // กันเงินที่ 3 จำนวน 200 ก่อน แล้วแบ่งเงินที่เหลือ 70/30
+        third = 200;
+        let remainingPool = Math.max(0, prizePool - third);
+
+        if (dealMode) {
+            first = Math.floor(remainingPool * 0.5);
+            second = remainingPool - first;
+        } else {
+            first = Math.ceil(remainingPool * 0.7);
+            second = remainingPool - first;
+        }
+    } else if (dealMode) {
         first = Math.floor(prizePool * 0.5);
         second = prizePool - first;
     } else {
@@ -346,6 +360,10 @@ function calculate() {
             earn += second;
             rankText = "🥈";
         }
+        else if (top3Mode && r == 3) {
+            earn += third;
+            rankText = "🥉";
+        }
 
         let isPaid = document.getElementById("paid"+i)?.checked;
 
@@ -372,6 +390,7 @@ function calculate() {
 
                 ${i === p1 ? `<span style="color:gold;">+ Rank1: ${first}</span><br>` : ""}
                 ${i === p2 ? `<span style="color:cyan;">+ Rank2: ${second}</span><br>` : ""}
+                ${top3Mode && r == 3 ? `<span style="color:#cd7f32;">+ Rank3: ${third}</span><br>` : ""}
                 ${kills[i-1] > 0 ? `<span style="color: #4FC244">+ Kill: ${killMoney}</span><br>` : ""}
                 ${i === p1 ? `<span style="color: #4FC244">+ Head Me: ${head}</span><br>` : ""}
 
@@ -447,8 +466,20 @@ async function saveData() {
 
     let first;
     let second;
+    let third = 0;
 
-    if (dealMode) {
+    if (top3Mode) {
+        third = 200;
+        let remainingPool = Math.max(0, prizePool - third);
+
+        if (dealMode) {
+            first = Math.floor(remainingPool * 0.5);
+            second = remainingPool - first;
+        } else {
+            first = Math.ceil(remainingPool * 0.7);
+            second = remainingPool - first;
+        }
+    } else if (dealMode) {
         first = Math.floor(prizePool * 0.5);
         second = prizePool - first;
     } else {
@@ -489,6 +520,10 @@ async function saveData() {
         else if (i === p2) {
             earn += second;
             rank = 2;
+        }
+        else if (top3Mode && r == 3) {
+            earn += third;
+            rank = 3;
         }
 
         let profit = earn - totalPay;

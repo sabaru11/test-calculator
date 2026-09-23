@@ -94,7 +94,11 @@ button {
 
     <button onclick="calculate()">คำนวณ</button>
     <button onclick="toggleDeal()" id="dealBtn">Deal: OFF</button>
-    <button onclick="toggleTop3()" id="top3Btn">🏆 ที่ 1-3: OFF</button>
+    <button type="button" onclick="toggleTop3(); return false;" id="top3Btn">🏆 ที่ 1-3: OFF</button>
+    <div id="top3Selector" style="display:none; margin-top:10px;">
+        <b>🥉 เลือกที่ 3:</b>
+        <div id="top3Players" style="margin-top:6px;"></div>
+    </div>
     <button onclick="saveData()">💾 Save</button>
 
     <div class="result" id="output"></div>
@@ -203,6 +207,8 @@ function generatePlayers() {
         </div>
         `;
     }
+
+    if (top3Mode) renderTop3Selector();
 }
 
 let dealMode = false;
@@ -278,6 +284,11 @@ function calculate() {
 
     if (!p1 || !p2) {
         alert("ต้องมี ที่ 1 และ ที่ 2");
+        return;
+    }
+
+    if (top3Mode && !top3Player) {
+        alert("กรุณาเลือกผู้เล่นที่เป็นที่ 3");
         return;
     }
 
@@ -360,7 +371,7 @@ function calculate() {
             earn += second;
             rankText = "🥈";
         }
-        else if (top3Mode && r == 3) {
+        else if (top3Mode && i === top3Player) {
             earn += third;
             rankText = "🥉";
         }
@@ -390,7 +401,7 @@ function calculate() {
 
                 ${i === p1 ? `<span style="color:gold;">+ Rank1: ${first}</span><br>` : ""}
                 ${i === p2 ? `<span style="color:cyan;">+ Rank2: ${second}</span><br>` : ""}
-                ${top3Mode && r == 3 ? `<span style="color:#cd7f32;">+ Rank3: ${third}</span><br>` : ""}
+                ${top3Mode && i === top3Player ? `<span style="color:#cd7f32;">+ Rank3: ${third}</span><br>` : ""}
                 ${kills[i-1] > 0 ? `<span style="color: #4FC244">+ Kill: ${killMoney}</span><br>` : ""}
                 ${i === p1 ? `<span style="color: #4FC244">+ Head Me: ${head}</span><br>` : ""}
 
@@ -464,6 +475,11 @@ async function saveData() {
         return;
     }
 
+    if (top3Mode && !top3Player) {
+        alert("กรุณาเลือกผู้เล่นที่เป็นที่ 3");
+        return;
+    }
+
     let first;
     let second;
     let third = 0;
@@ -521,7 +537,7 @@ async function saveData() {
             earn += second;
             rank = 2;
         }
-        else if (top3Mode && r == 3) {
+        else if (top3Mode && i === top3Player) {
             earn += third;
             rank = 3;
         }
